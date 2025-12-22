@@ -1,3 +1,6 @@
+## 0.0.4
+* Documentation: Added support contact email.
+
 ## 0.0.3
 * Documentation: Improved README video link format (pub.dev compatibility).
 

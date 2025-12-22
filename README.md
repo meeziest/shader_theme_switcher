@@ -146,3 +146,7 @@ ThemeShockWaveArea(
 - `ShockwaveConfig.liquid`: Smooth, viscous, water-like.
 - `ShockwaveConfig.gentle`: Subtle distortion, good for minimal distraction.
 - `ShockwaveConfig.normal`: Standard balanced effect.
+
+## Support
+
+For support and questions, please contact: [dinmukhammed.yerimbetov@gmail.com](mailto:dinmukhammed.yerimbetov@gmail.com)
