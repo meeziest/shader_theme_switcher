@@ -1,3 +1,6 @@
+## 0.0.5
+* Refactor: Adjusted liquid preset `powExp` for smoother effect.
+
 ## 0.0.4
 * Documentation: Added support contact email.
 
