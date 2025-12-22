@@ -1,3 +1,6 @@
+## 0.0.6
+* Metadata: Updated repository and issue tracker links.
+
 ## 0.0.5
 * Refactor: Adjusted liquid preset `powExp` for smoother effect.
 
