@@ -1,21 +1,38 @@
+import 'dart:math' as dart_math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_shaders/flutter_shaders.dart';
 
+import 'shockwave_config.dart';
+
 import 'theme_provider.dart';
 
+/// A widget that renders the shockwave shader effect during theme transitions.
+///
+/// This widget uses a Fragment Shader to distort the content based on the
+/// animation progress controlled by [ThemeController].
 class ThemeShockWaveArea extends StatefulWidget {
   const ThemeShockWaveArea({
     super.key,
     required this.child,
     this.duration = const Duration(milliseconds: 700),
     this.mixFactor = 1.0,
+    this.config = ShockwaveConfig.liquid,
   });
 
+  /// The child widget over which the effect will be drawn.
+  /// Typically this wraps your [Scaffold] or the main content of your screen.
   final Widget child;
+
+  /// The duration of the shockwave animation.
   final Duration duration;
+
+  /// Controls the blending of the circle mask.
   final double mixFactor;
+
+  /// Configuration for the shockwave physics and look.
+  final ShockwaveConfig config;
 
   @override
   State<ThemeShockWaveArea> createState() => _ThemeShockWaveAreaState();
@@ -26,7 +43,7 @@ class _ThemeShockWaveAreaState extends State<ThemeShockWaveArea>
   late final AnimationController _controller;
   ui.FragmentProgram? _program;
 
-  ThemeModel? _model;
+  ThemeController? _controllerModel;
 
   @override
   void initState() {
@@ -66,20 +83,28 @@ class _ThemeShockWaveAreaState extends State<ThemeShockWaveArea>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _model?.removeListener(_onListen);
-    _model = ThemeModelInheritedNotifier.of(context);
-    _model?.addListener(_onListen);
+    _controllerModel?.removeListener(_onListen);
+    _controllerModel = InheritedThemeController.of(context);
+    _controllerModel?.addListener(_onListen);
   }
 
   void _onListen() async {
-    _controller.forward(from: 0.0).then((value) {
-      _model?.isAnimating = false;
-    });
+    // Only start if the controller logic says we are animating.
+    // This prevents re-triggering when isAnimating sets to false at the end.
+    if (_controllerModel?.isAnimating == true) {
+      if (_controller.value != 0.0) {
+        _controller.value = 0.0;
+      }
+      _controller.forward(from: 0.0).then((value) {
+        _controllerModel?.endAnimation();
+        _controller.value = 0.0; // Reset for next time to prevent flash
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final model = ThemeModelInheritedNotifier.of(context);
+    final controller = InheritedThemeController.of(context);
 
     if (_program == null) {
       return widget.child;
@@ -87,29 +112,70 @@ class _ThemeShockWaveAreaState extends State<ThemeShockWaveArea>
 
     final shader = _program!.fragmentShader();
 
-    return Material(
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          return AnimatedSampler(
-            enabled: model.isAnimating && model.oldThemeImage != null,
-            (ui.Image newThemeTexture, Size size, Canvas canvas) {
-              shader.setFloat(0, _controller.value); // iTime
-              shader.setFloat(1, size.width); // iResolution.x
-              shader.setFloat(2, size.height); // iResolution.y
-              shader.setFloat(3, model.switcherOffset.dx);
-              shader.setFloat(4, model.switcherOffset.dy);
-              shader.setFloat(5, widget.mixFactor); // circle mix factor
+    return IgnorePointer(
+      ignoring: controller.isAnimating,
+      child: Material(
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            return AnimatedSampler(
+              enabled:
+                  controller.isAnimating && controller.oldThemeImage != null,
+              (ui.Image newThemeTexture, Size size, Canvas canvas) {
+                final devicePixelRatio =
+                    MediaQuery.of(context).devicePixelRatio;
+                shader.setFloat(0, _controller.value); // iTime
+                shader.setFloat(
+                    1, size.width * devicePixelRatio); // iResolution.x
+                shader.setFloat(
+                    2, size.height * devicePixelRatio); // iResolution.y
+                shader.setFloat(
+                    3, controller.switcherOffset.dx * devicePixelRatio);
+                shader.setFloat(
+                    4, controller.switcherOffset.dy * devicePixelRatio);
+                shader.setFloat(5, widget.mixFactor); // circle mix factor
 
-              shader.setImageSampler(0, model.oldThemeImage!); // iChannel0
-              shader.setImageSampler(1, newThemeTexture); // iChannel1
+                // Custom config uniforms
+                shader.setFloat(6, widget.config.shockStrength);
+                shader.setFloat(7, widget.config.lensingSpread);
+                shader.setFloat(8, widget.config.powExp);
 
-              final paint = Paint()..shader = shader;
-              canvas.drawRect(Offset.zero & size, paint);
-            },
-            child: widget.child,
-          );
-        },
+                // Calculate dynamic maxRadius if null
+                double maxRadius = widget.config.maxRadius ?? 0.0;
+                if (widget.config.maxRadius == null) {
+                  final double w = size.width;
+                  final double h = size.height;
+                  final double sx = controller.switcherOffset.dx;
+                  final double sy = controller.switcherOffset.dy;
+
+                  // Distances squared to 4 corners
+                  final d1 = sx * sx + sy * sy; // Top-Left (0,0)
+                  final d2 = (w - sx) * (w - sx) + sy * sy; // Top-Right (w,0)
+                  final d3 = sx * sx + (h - sy) * (h - sy); // Bottom-Left (0,h)
+                  final d4 = (w - sx) * (w - sx) +
+                      (h - sy) * (h - sy); // Bottom-Right (w,h)
+
+                  final maxDistSq = [d1, d2, d3, d4]
+                      .reduce((curr, next) => curr > next ? curr : next);
+                  // Shader uses coordinates normalized by height:
+                  // scaledOrigin = (sx/h, sy/h)
+                  // scaledUv = (x/h, y/h)
+                  // So we normalize the pixel distance by height.
+                  maxRadius = dart_math.sqrt(maxDistSq) / h;
+                }
+                shader.setFloat(9, maxRadius);
+
+                shader.setImageSampler(
+                    0, controller.oldThemeImage!); // iChannel0
+                shader.setImageSampler(1, newThemeTexture); // iChannel1
+
+                final paint = Paint()..shader = shader;
+                canvas.drawRect(Offset.zero & size, paint);
+              },
+              child: widget.child,
+            );
+          },
+        ),
       ),
     );
   }

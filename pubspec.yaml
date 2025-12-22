@@ -1,7 +1,9 @@
 name: shader_theme_switcher
-description: A Flutter package for theme switching with shader effects.
+description: A Flutter package for creating beautiful, shader-driven theme transitions (shockwave effect).
 version: 0.0.1
-publish_to: 'none'
+homepage: https://github.com/example/shader_theme_switcher
+repository: https://github.com/example/shader_theme_switcher
+issue_tracker: https://github.com/example/shader_theme_switcher/issues
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -11,6 +13,11 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_shaders: ^0.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
 
 flutter:
   shaders:

@@ -11,36 +11,42 @@ uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;
 uniform float circleMixFactor;
 
-// Constants for the wave effect
-const float HALF_PI         = 3.14;
-const float POW_EXP         = 20.0;
-const float SHOCK_STRENGTH  = 0.5;
-const float LENSING_SPREAD  = 0.7;
+uniform float shockStrength;
+uniform float lensingSpread;
+uniform float powExp;
+uniform float maxRadius;
 
-const float MAX_RADIUS = 1.5;
 
 void main() {
     vec2 uv = gl_FragCoord.xy / iResolution.xy;
     vec2 origin = splashPoint.xy / iResolution.xy;
 
-    float localTime = fract(iTime);
+    float localTime = iTime;
 
     float aspect = iResolution.x / iResolution.y;
 
     vec2 scaledUv     = vec2(uv.x * aspect, uv.y);
     vec2 scaledOrigin = vec2(origin.x * aspect, origin.y);
 
-    float radius = MAX_RADIUS * localTime;
+    // Constants
+    const float HALF_PI = 3.14;
+
+    float radius = maxRadius * localTime;
 
     float circle = radius - distance(scaledOrigin, scaledUv);
 
+    // Damping: Wave amplitude decreases as it travels further
+    // Simple linear damping based on time
+    float damping = 1.0 - localTime; 
+
     // Main ripple factor
-    float factor = SHOCK_STRENGTH
+    float factor = shockStrength
+    * damping 
     * sin(localTime * HALF_PI)
-    * pow(clamp(1.0 - abs(circle), 0.0, 1.0), POW_EXP);
+    * pow(clamp(1.0 - abs(circle), 0.0, 1.0), powExp);
 
     // Lensing offset
-    vec2 offsetVec = (LENSING_SPREAD * factor) * normalize(origin - uv);
+    vec2 offsetVec = (lensingSpread * factor) * normalize(origin - uv);
 
     // Sample both textures
     vec3 color0 = texture(iChannel0, uv + offsetVec).rgb;

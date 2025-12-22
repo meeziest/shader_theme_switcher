@@ -2,14 +2,21 @@ import 'package:flutter/material.dart';
 
 import 'theme_provider.dart';
 
-typedef BuilderWithTheme = Widget Function(BuildContext, ThemeModel model, ThemeSwitcherCallback callback);
+/// A builder function that provides the [BuildContext] and a callback function to switch the theme.
+typedef BuilderWithTheme = Widget Function(
+    BuildContext, ThemeSwitcherCallback callback);
+
+/// A callback function signature for triggering the theme switch.
 typedef ThemeSwitcherCallback = void Function({
   required ThemeData theme,
-  bool isReversed,
   Offset? offset,
   VoidCallback? onAnimationFinish,
 });
 
+/// A helper widget that simplifies triggering the theme switch.
+///
+/// It automatically manages a [GlobalKey] to pinpoint the exact location
+/// of the widget for the splash origin.
 class ThemeSwitcherPoint extends StatefulWidget {
   const ThemeSwitcherPoint({
     super.key,
@@ -31,7 +38,6 @@ class ThemeSwitcherPointState extends State<ThemeSwitcherPoint> {
       key: _globalKey,
       builder: (context) => widget.builder(
         context,
-        ThemeModelInheritedNotifier.of(context),
         changeTheme,
       ),
     );
@@ -39,11 +45,11 @@ class ThemeSwitcherPointState extends State<ThemeSwitcherPoint> {
 
   void changeTheme({
     required ThemeData theme,
-    bool isReversed = false,
     Offset? offset,
     VoidCallback? onAnimationFinish,
   }) {
-    ThemeModelInheritedNotifier.of(context).changeTheme(
+    InheritedThemeController.of(context).changeTheme(
+      context,
       theme: theme,
       key: _globalKey,
       offset: offset,

@@ -1,0 +1,11 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "shader_theme_switcher example",
+            "request": "launch",
+            "type": "dart",
+            "program": "example/lib/main.dart"
+        }
+    ]
+}
