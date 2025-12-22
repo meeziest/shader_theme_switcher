@@ -144,6 +144,5 @@ ThemeShockWaveArea(
 ### Presets
 
 - `ShockwaveConfig.liquid`: Smooth, viscous, water-like.
-- `ShockwaveConfig.snap`: Fast, sharp, high-impact.
 - `ShockwaveConfig.gentle`: Subtle distortion, good for minimal distraction.
 - `ShockwaveConfig.normal`: Standard balanced effect.
