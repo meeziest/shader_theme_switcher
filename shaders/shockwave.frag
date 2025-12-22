@@ -11,6 +11,7 @@ uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;
 uniform float circleMixFactor;
 
+uniform float devicePixelRatio;
 uniform float shockStrength;
 uniform float lensingSpread;
 uniform float powExp;
@@ -18,8 +19,14 @@ uniform float maxRadius;
 
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / iResolution.xy;
-    vec2 origin = splashPoint.xy / iResolution.xy;
+    // iResolution is PHYSICAL. gl_FragCoord is PHYSICAL.
+    // uv becomes 0.0 - 1.0 covering the screen.
+    vec2 unscaledUv = gl_FragCoord.xy / iResolution.xy;
+    vec2 uv = unscaledUv; 
+
+    // splashPoint is LOGICAL.
+    // logical_resolution = iResolution.xy / devicePixelRatio.
+    vec2 origin = splashPoint.xy / (iResolution.xy / devicePixelRatio);
 
     float localTime = iTime;
 

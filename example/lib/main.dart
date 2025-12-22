@@ -22,9 +22,10 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'Shader Theme Switcher Demo',
           theme: theme,
+          debugShowCheckedModeBanner: false,
           home: const ThemeShockWaveArea(
             config: ShockwaveConfig.liquid,
-            duration: Duration(milliseconds: 1500),
+            duration: Duration(milliseconds: 1000),
             child: MyHomePage(),
           ),
         );

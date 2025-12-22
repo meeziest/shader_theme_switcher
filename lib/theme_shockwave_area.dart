@@ -125,20 +125,19 @@ class _ThemeShockWaveAreaState extends State<ThemeShockWaveArea>
                 final devicePixelRatio =
                     MediaQuery.of(context).devicePixelRatio;
                 shader.setFloat(0, _controller.value); // iTime
-                shader.setFloat(
-                    1, size.width * devicePixelRatio); // iResolution.x
-                shader.setFloat(
-                    2, size.height * devicePixelRatio); // iResolution.y
-                shader.setFloat(
-                    3, controller.switcherOffset.dx * devicePixelRatio);
-                shader.setFloat(
-                    4, controller.switcherOffset.dy * devicePixelRatio);
+                // iResolution is PHYSICAL pixels
+                shader.setFloat(1, size.width * devicePixelRatio);
+                shader.setFloat(2, size.height * devicePixelRatio);
+                // offset is LOGICAL pixels
+                shader.setFloat(3, controller.switcherOffset.dx);
+                shader.setFloat(4, controller.switcherOffset.dy);
                 shader.setFloat(5, widget.mixFactor); // circle mix factor
+                shader.setFloat(6, devicePixelRatio); // devicePixelRatio
 
                 // Custom config uniforms
-                shader.setFloat(6, widget.config.shockStrength);
-                shader.setFloat(7, widget.config.lensingSpread);
-                shader.setFloat(8, widget.config.powExp);
+                shader.setFloat(7, widget.config.shockStrength);
+                shader.setFloat(8, widget.config.lensingSpread);
+                shader.setFloat(9, widget.config.powExp);
 
                 // Calculate dynamic maxRadius if null
                 double maxRadius = widget.config.maxRadius ?? 0.0;
@@ -163,7 +162,7 @@ class _ThemeShockWaveAreaState extends State<ThemeShockWaveArea>
                   // So we normalize the pixel distance by height.
                   maxRadius = dart_math.sqrt(maxDistSq) / h;
                 }
-                shader.setFloat(9, maxRadius);
+                shader.setFloat(10, maxRadius);
 
                 shader.setImageSampler(
                     0, controller.oldThemeImage!); // iChannel0
