@@ -32,7 +32,7 @@ void main() {
       const config = ShockwaveConfig.liquid;
       expect(config.shockStrength, 1.0);
       expect(config.lensingSpread, 0.3);
-      expect(config.powExp, 12.0);
+      expect(config.powExp, 50.0);
     });
 
     test('Preset: gentle', () {
