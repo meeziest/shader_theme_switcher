@@ -1,3 +1,6 @@
+## 0.0.7
+* Documentation: Removed outdated reference to chromatic aberration.
+
 ## 0.0.6
 * Metadata: Updated repository and issue tracker links.
 

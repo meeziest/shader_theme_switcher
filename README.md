@@ -7,7 +7,7 @@ A Flutter package for creating beautiful, shader-driven theme transitions. This 
 ## Features
 
 - **Shader-Powered Transitions**: Uses GLSL shaders (FragProgram) for high-performance visual effects.
-- **Physics-Based Animation**: Includes amplitude damping and optional chromatic aberration (RGB split) for realistic liquid or glass-like warping.
+- **Physics-Based Animation**: Includes amplitude damping for realistic liquid or glass-like warping.
 - **Dynamic Resizing**: Automatically calculates the shockwave radius to cover the screen from any touch point.
 - **Customizable**:
   - `ShockwaveConfig`: Control strength, spread, sharpness, and physics.
