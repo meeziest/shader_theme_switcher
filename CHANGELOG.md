@@ -1,3 +1,6 @@
+## 0.0.3
+* Documentation: Improved README video link format (pub.dev compatibility).
+
 ## 0.0.2
 
 * Fixed: Shader random flickering at end of animation.
