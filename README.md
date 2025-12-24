@@ -11,7 +11,7 @@ A Flutter package for creating beautiful, shader-driven theme transitions. This 
 - **Dynamic Resizing**: Automatically calculates the shockwave radius to cover the screen from any touch point.
 - **Customizable**:
   - `ShockwaveConfig`: Control strength, spread, sharpness, and physics.
-  - Predefined presets: `.liquid`, `.snap`, `.gentle`, `.normal`.
+  - Predefined presets: `.liquid`, `.gentle`, `.normal`.
 - **Interaction Safety**: Automatically blocks user interactions during the transition to prevent state issues.
 
 ## Installation
@@ -82,7 +82,7 @@ class MyHomePage extends StatelessWidget {
 
 You can trigger the switch in two ways:
 
-#### Option A: Using `ThemeSwitcherPoint` (Recommended)
+#### Option A: Using `ThemeSwitcherPoint` 
 This widget automatically manages the `GlobalKey` for the splash origin.
 
 ```dart
