@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
           theme: theme,
           debugShowCheckedModeBanner: false,
           home: const ThemeShockWaveArea(
-            config: ShockwaveConfig.liquid,
+            config: ShockwaveConfig.gentle,
             duration: Duration(milliseconds: 1000),
             child: MyHomePage(),
           ),

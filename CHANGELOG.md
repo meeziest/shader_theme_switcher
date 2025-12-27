@@ -1,3 +1,6 @@
+## 0.0.8
+* Documentation: Replaced video link with GIF demo in README.
+
 ## 0.0.7
 * Documentation: Removed outdated reference to chromatic aberration.
 
