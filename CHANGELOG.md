@@ -1,3 +1,6 @@
+## 0.0.9
+* Documentation: Fixed GIF demo display on pub.dev by using absolute URL.
+
 ## 0.0.8
 * Documentation: Replaced video link with GIF demo in README.
 
