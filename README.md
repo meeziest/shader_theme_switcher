@@ -2,7 +2,10 @@
 
 A Flutter package for creating beautiful, shader-driven theme transitions. This package implements a "shockwave" effect that physically displaces pixels to expand the new theme over the old one, complete with optional chromatic aberration and dynamic physics.
 
-![Shader Theme Switcher Demo](https://raw.githubusercontent.com/meeziest/shader_theme_switcher/main/demo.gif)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/meeziest/shader_theme_switcher/main/demo.gif" width="600" alt="Shader Theme Switcher Demo">
+</p>
+
 
 ## Features
 
