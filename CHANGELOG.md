@@ -1,3 +1,7 @@
+## 0.0.11
+* Documentation: Centered and sized the GIF demo in README.
+* Metadata: Updated repository and package metadata.
+
 ## 0.0.9
 * Documentation: Fixed GIF demo display on pub.dev by using absolute URL.
 
