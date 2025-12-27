@@ -1,3 +1,6 @@
+## 0.0.10
+* Metadata: Simplified repository and homepage URLs.
+
 ## 0.0.9
 * Documentation: Fixed GIF demo display on pub.dev by using absolute URL.
 
