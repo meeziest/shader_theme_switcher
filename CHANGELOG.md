@@ -1,3 +1,9 @@
+## 0.0.12
+* Feature: Added concentric ripple rings effect.
+* Feature: Support for desktop platforms (macOS/Windows/Linux) with correct logical pixel scaling.
+* Fix: Resolved Shader scaling issues on high-DPI displays (Retina).
+* Improvement: Moved `mixFactor` to `ShockwaveConfig` for centralized configuration.
+
 ## 0.0.11
 * Documentation: Centered and sized the GIF demo in README.
 * Metadata: Updated repository and package metadata.

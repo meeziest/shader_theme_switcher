@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math' as dart_math;
 import 'dart:ui' as ui;
 
@@ -88,16 +89,16 @@ class _ThemeShockWaveAreaState extends State<ThemeShockWaveArea>
     _controllerModel?.addListener(_onListen);
   }
 
-  void _onListen() async {
-    // Only start if the controller logic says we are animating.
-    // This prevents re-triggering when isAnimating sets to false at the end.
-    if (_controllerModel?.isAnimating == true) {
-      if (_controller.value != 0.0) {
-        _controller.value = 0.0;
-      }
-      _controller.forward(from: 0.0).then((value) {
-        _controllerModel?.endAnimation();
-        _controller.value = 0.0; // Reset for next time to prevent flash
+  void _onListen() {
+    if (!mounted) return;
+
+    // Only start if the controller logic says we are animating and our local controller isn't already running
+    if (_controllerModel?.isAnimating == true && !_controller.isAnimating) {
+      _controller.forward(from: 0.0).whenComplete(() {
+        if (mounted) {
+          _controllerModel?.endAnimation();
+          _controller.value = 0.0;
+        }
       });
     }
   }
@@ -111,6 +112,7 @@ class _ThemeShockWaveAreaState extends State<ThemeShockWaveArea>
     }
 
     final shader = _program!.fragmentShader();
+    final devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
 
     return IgnorePointer(
       ignoring: controller.isAnimating,
@@ -122,17 +124,26 @@ class _ThemeShockWaveAreaState extends State<ThemeShockWaveArea>
               enabled:
                   controller.isAnimating && controller.oldThemeImage != null,
               (ui.Image newThemeTexture, Size size, Canvas canvas) {
-                final devicePixelRatio =
-                    MediaQuery.of(context).devicePixelRatio;
+                // Determine if gl_FragCoord is Physical (Mobile) or Logical (Desktop)
+                // On Mobile, FragCoord is physical, so we need to divide by DPR to get Logical.
+                // On Desktop (macOS), FragCoord is already Logical, so scale is 1.0.
+                final bool isDesktop =
+                    Platform.isMacOS || Platform.isWindows || Platform.isLinux;
+                final double fragCoordScale =
+                    isDesktop ? 1.0 : devicePixelRatio;
+
                 shader.setFloat(0, _controller.value); // iTime
-                // iResolution is PHYSICAL pixels
-                shader.setFloat(1, size.width * devicePixelRatio);
-                shader.setFloat(2, size.height * devicePixelRatio);
-                // offset is LOGICAL pixels
+
+                // iResolution is now passed as LOGICAL size
+                shader.setFloat(1, size.width);
+                shader.setFloat(2, size.height);
+
                 shader.setFloat(3, controller.switcherOffset.dx);
                 shader.setFloat(4, controller.switcherOffset.dy);
-                shader.setFloat(5, widget.mixFactor); // circle mix factor
-                shader.setFloat(6, devicePixelRatio); // devicePixelRatio
+                shader.setFloat(5, widget.mixFactor);
+
+                // Uniform 6: fragCoordScale
+                shader.setFloat(6, fragCoordScale);
 
                 // Custom config uniforms
                 shader.setFloat(7, widget.config.shockStrength);
